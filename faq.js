@@ -5,10 +5,10 @@ function showCategory(categoryName) {
         cat.classList.remove('active');
     });
     
-    // Remove active class from all category cards
-    const allCards = document.querySelectorAll('.category-card');
-    allCards.forEach(card => {
-        card.classList.remove('active');
+    // Remove active class from all category tabs
+    const allTabs = document.querySelectorAll('.category-tab');
+    allTabs.forEach(tab => {
+        tab.classList.remove('active');
     });
     
     // Show selected category
@@ -17,7 +17,7 @@ function showCategory(categoryName) {
         selectedCategory.classList.add('active');
     }
     
-    // Add active class to clicked card
+    // Add active class to clicked tab
     event.currentTarget.classList.add('active');
 }
 
@@ -49,8 +49,8 @@ function toggleAnswer(element) {
 
 // Show first category by default when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    const firstCard = document.querySelector('.category-card');
-    if (firstCard) {
-        firstCard.click();
+    const firstTab = document.querySelector('.category-tab');
+    if (firstTab) {
+        firstTab.click();
     }
 });

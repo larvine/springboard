@@ -52,33 +52,18 @@
     <!-- Page content -->
     <div class="container mt--8 pb-5">
         <!-- Category Selection -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="category-card" onclick="showCategory('model')">
-                    <div class="category-card-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <h4>모델 설정 관련</h4>
-                    <p>AI 모델 선택 및 설정</p>
-                </div>
+        <div class="category-tabs mb-4">
+            <div class="category-tab" onclick="showCategory('model')">
+                <i class="fas fa-cog"></i>
+                <span>모델 설정 관련</span>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="category-card" onclick="showCategory('key')">
-                    <div class="category-card-icon">
-                        <i class="fas fa-key"></i>
-                    </div>
-                    <h4>키 설정 관련</h4>
-                    <p>API 키 관리 및 설정</p>
-                </div>
+            <div class="category-tab" onclick="showCategory('key')">
+                <i class="fas fa-key"></i>
+                <span>키 설정 관련</span>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="category-card" onclick="showCategory('error')">
-                    <div class="category-card-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h4>에러/타임아웃</h4>
-                    <p>문제 해결 및 오류 대응</p>
-                </div>
+            <div class="category-tab" onclick="showCategory('error')">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>에러/타임아웃</span>
             </div>
         </div>
 
