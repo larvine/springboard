@@ -1,3 +1,85 @@
+let faqData = null;
+
+// Load FAQ data from JSON
+async function loadFAQData() {
+    try {
+        const response = await fetch('faq-data.json');
+        faqData = await response.json();
+        initializeFAQ();
+    } catch (error) {
+        console.error('FAQ 데이터를 로드하는데 실패했습니다:', error);
+    }
+}
+
+// Initialize FAQ with loaded data
+function initializeFAQ() {
+    if (!faqData) return;
+    
+    // Generate category tabs
+    generateCategoryTabs();
+    
+    // Generate FAQ content
+    generateFAQContent();
+    
+    // Show first category by default
+    const firstTab = document.querySelector('.category-tab');
+    if (firstTab) {
+        firstTab.click();
+    }
+}
+
+// Generate category tabs
+function generateCategoryTabs() {
+    const categoryTabsContainer = document.querySelector('.category-tabs');
+    categoryTabsContainer.innerHTML = '';
+    
+    faqData.categories.forEach(category => {
+        const tabElement = document.createElement('div');
+        tabElement.className = 'category-tab';
+        tabElement.onclick = () => showCategory(category.id);
+        tabElement.innerHTML = `
+            <i class="${category.icon}"></i>
+            <span>${category.name}</span>
+        `;
+        categoryTabsContainer.appendChild(tabElement);
+    });
+}
+
+// Generate FAQ content
+function generateFAQContent() {
+    const container = document.querySelector('.container.mt--8');
+    
+    // Remove existing FAQ categories
+    const existingCategories = container.querySelectorAll('.faq-category');
+    existingCategories.forEach(cat => cat.remove());
+    
+    // Create new FAQ categories
+    faqData.categories.forEach(category => {
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'faq-category';
+        categoryElement.id = `category-${category.id}`;
+        
+        category.faqs.forEach(faq => {
+            const faqItem = document.createElement('div');
+            faqItem.className = 'faq-item';
+            faqItem.innerHTML = `
+                <div class="faq-question" onclick="toggleAnswer(this)">
+                    <h5>${faq.question}</h5>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        ${faq.answer}
+                    </div>
+                </div>
+            `;
+            categoryElement.appendChild(faqItem);
+        });
+        
+        container.appendChild(categoryElement);
+    });
+}
+
 function showCategory(categoryName) {
     // Hide all categories
     const allCategories = document.querySelectorAll('.faq-category');
@@ -47,10 +129,5 @@ function toggleAnswer(element) {
     icon.classList.toggle('active');
 }
 
-// Show first category by default when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    const firstTab = document.querySelector('.category-tab');
-    if (firstTab) {
-        firstTab.click();
-    }
-});
+// Load FAQ data when page loads
+document.addEventListener('DOMContentLoaded', loadFAQData);
