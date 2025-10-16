@@ -138,6 +138,7 @@ body {
     padding: 1.25rem;
     color: #525f7f;
     line-height: 1.7;
+    white-space: pre-line;
 }
 
 .category-header {
