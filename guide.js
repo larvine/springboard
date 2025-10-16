@@ -53,39 +53,30 @@ function generateGuideSections() {
         sectionElement.className = 'guide-section';
         sectionElement.id = `guide-${category.id}`;
         
-        // Add loading state
-        sectionElement.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>로딩 중...</p></div>';
+        // Render markdown content directly
+        renderMarkdownContent(category.id, category.content);
         
         guideContent.appendChild(sectionElement);
-        
-        // Load markdown content
-        loadMarkdownContent(category.id, category.markdownFile);
     });
 }
 
-// Load and render markdown content
-async function loadMarkdownContent(categoryId, markdownFile) {
+// Render markdown content
+function renderMarkdownContent(categoryId, markdownText) {
     const sectionElement = document.getElementById(`guide-${categoryId}`);
     
     try {
-        const response = await fetch(markdownFile);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const markdownText = await response.text();
-        
         // Render markdown to HTML
         const htmlContent = marked.parse(markdownText);
         
         // Update section content
         sectionElement.innerHTML = `<div class="markdown-content">${htmlContent}</div>`;
     } catch (error) {
-        console.error(`마크다운 파일 로드 실패 (${markdownFile}):`, error);
+        console.error(`마크다운 렌더링 실패:`, error);
         sectionElement.innerHTML = `
             <div class="markdown-content">
                 <p style="color: #f56565;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    콘텐츠를 불러오는데 실패했습니다.
+                    콘텐츠를 렌더링하는데 실패했습니다.
                 </p>
             </div>
         `;

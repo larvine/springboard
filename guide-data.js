@@ -518,7 +518,8 @@ logger = logging.getLogger(__name__)
 def track_usage(response):
     usage = response.get('usage', {})
     logger.info(f"토큰 사용: {usage.get('total_tokens', 0)}")
-    logger.info(f"비용: ${usage.get('total_tokens', 0) * 0.00002:.4f}")
+    logger.info(f"비용: {usage.get('total_tokens', 0) * 0.00002:.4f}")
+    
 \`\`\`
 
 ### 대시보드 활용
