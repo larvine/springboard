@@ -53,34 +53,24 @@ function generateGuideSections() {
         sectionElement.className = 'guide-section';
         sectionElement.id = `guide-${category.id}`;
         
-        // Render markdown content directly
-        renderMarkdownContent(category.id, category.content);
+        try {
+            // Render markdown to HTML
+            const htmlContent = marked.parse(category.content);
+            sectionElement.innerHTML = `<div class="markdown-content">${htmlContent}</div>`;
+        } catch (error) {
+            console.error(`마크다운 렌더링 실패:`, error);
+            sectionElement.innerHTML = `
+                <div class="markdown-content">
+                    <p style="color: #f56565;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        콘텐츠를 렌더링하는데 실패했습니다.
+                    </p>
+                </div>
+            `;
+        }
         
         guideContent.appendChild(sectionElement);
     });
-}
-
-// Render markdown content
-function renderMarkdownContent(categoryId, markdownText) {
-    const sectionElement = document.getElementById(`guide-${categoryId}`);
-    
-    try {
-        // Render markdown to HTML
-        const htmlContent = marked.parse(markdownText);
-        
-        // Update section content
-        sectionElement.innerHTML = `<div class="markdown-content">${htmlContent}</div>`;
-    } catch (error) {
-        console.error(`마크다운 렌더링 실패:`, error);
-        sectionElement.innerHTML = `
-            <div class="markdown-content">
-                <p style="color: #f56565;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    콘텐츠를 렌더링하는데 실패했습니다.
-                </p>
-            </div>
-        `;
-    }
 }
 
 // Show specific guide section
