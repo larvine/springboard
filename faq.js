@@ -62,6 +62,8 @@ function generateFAQContent() {
         category.faqs.forEach(faq => {
             const faqItem = document.createElement('div');
             faqItem.className = 'faq-item';
+            // Convert \n to <br> for proper line breaks
+            const formattedAnswer = faq.answer.replace(/\n/g, '<br>');
             faqItem.innerHTML = `
                 <div class="faq-question" onclick="toggleAnswer(this)">
                     <h5>${faq.question}</h5>
@@ -69,7 +71,7 @@ function generateFAQContent() {
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-content">
-                        ${faq.answer}
+                        ${formattedAnswer}
                     </div>
                 </div>
             `;
