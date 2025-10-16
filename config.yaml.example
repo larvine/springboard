@@ -1,0 +1,87 @@
+# Prometheus P95 메트릭 조회 설정 예제
+
+# Prometheus 서버 설정
+prometheus:
+  url: "http://localhost:9090"
+  timeout: 10  # 초
+  
+# 메트릭 설정
+metrics:
+  # 기본 메트릭
+  default_metric: "request_duration_seconds"
+  
+  # 모니터링할 메트릭 목록
+  tracked_metrics:
+    - name: "request_duration_seconds"
+      description: "API 요청 응답 시간"
+      model_label: "model"
+      
+    - name: "api_latency_seconds"
+      description: "API 레이턴시"
+      model_label: "model_name"
+      
+    - name: "inference_time_seconds"
+      description: "모델 추론 시간"
+      model_label: "model"
+
+# 쿼리 설정
+query:
+  # 기본 시간 범위
+  default_time_range: "5m"
+  
+  # Range 쿼리 설정
+  range:
+    default_duration: "1h"
+    default_step: "1m"
+  
+  # 조회할 백분위수
+  percentiles:
+    - 50   # P50 (중앙값)
+    - 95   # P95
+    - 99   # P99
+
+# SLA 설정
+sla:
+  # 모델별 P95 SLA 임계값 (밀리초)
+  thresholds:
+    gpt-4: 300
+    gpt-3.5-turbo: 150
+    claude-2: 250
+    palm-2: 200
+    default: 200  # 기본 임계값
+  
+  # 알림 설정
+  alerts:
+    enabled: true
+    webhook_url: "https://your-webhook-url.com/alerts"
+    
+# 출력 설정
+output:
+  format: "text"  # text, json, csv
+  show_timestamp: true
+  decimal_places: 2
+  
+# 대시보드 설정
+dashboard:
+  refresh_interval: 30  # 초
+  show_graphs: true
+  
+# 로깅 설정
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "prometheus_metrics.log"
+  
+# 모델 그룹 설정 (선택사항)
+model_groups:
+  openai:
+    - gpt-4
+    - gpt-3.5-turbo
+    - gpt-4-turbo
+    
+  anthropic:
+    - claude-2
+    - claude-instant
+    
+  google:
+    - palm-2
+    - gemini-pro
