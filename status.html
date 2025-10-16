@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - 모델 상태 모니터</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    
+    <!-- Argon CSS -->
+    <link rel="stylesheet" href="https://demos.creative-tim.com/argon-dashboard/assets/css/argon.css?v=1.2.0">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="status.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-default">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat"></i> Status
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-default" aria-controls="navbar-default" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Header -->
+    <div class="header bg-gradient-primary py-7 py-lg-8">
+        <div class="container">
+            <div class="header-body text-center mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-xl-8 col-lg-10">
+                        <h1 class="text-white">모델 상태 모니터</h1>
+                        <p class="text-lead text-white">실시간 모델별 응답속도 모니터링 (1시간 기준 P95)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="separator separator-bottom separator-skew zindex-100">
+            <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+        <!-- Status Overview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card status-overview">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-info-circle"></i> 시스템 전체 상태
+                                </h5>
+                            </div>
+                            <div class="col-auto">
+                                <span class="badge badge-lg" id="overall-status">
+                                    <i class="fas fa-spinner fa-spin"></i> 확인 중...
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <span class="stat-label">마지막 업데이트</span>
+                                    <span class="stat-value" id="last-update">-</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <span class="stat-label">모니터링 기간</span>
+                                    <span class="stat-value">1시간</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <span class="stat-label">측정 지표</span>
+                                    <span class="stat-value">P95 응답속도</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Status Cards -->
+        <div class="row" id="model-status-container">
+            <!-- Model cards will be dynamically generated here -->
+        </div>
+
+        <!-- Status Legend -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-traffic-light"></i> 상태 기준
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="legend-item">
+                                    <span class="status-indicator status-healthy"></span>
+                                    <div class="legend-text">
+                                        <strong>정상</strong>
+                                        <span class="text-muted">P95 &lt; 10초</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="legend-item">
+                                    <span class="status-indicator status-warning"></span>
+                                    <div class="legend-text">
+                                        <strong>경고</strong>
+                                        <span class="text-muted">10초 ≤ P95 ≤ 30초</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="legend-item">
+                                    <span class="status-indicator status-critical"></span>
+                                    <div class="legend-text">
+                                        <strong>심각</strong>
+                                        <span class="text-muted">P95 &gt; 30초</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-chart-line"></i> 모니터링 정보
+                        </h5>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-check-circle text-success"></i> 
+                            이 페이지는 30초마다 자동으로 새로고침됩니다.
+                        </p>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-check-circle text-success"></i> 
+                            P95 응답속도는 지난 1시간 동안의 95번째 백분위수 값입니다.
+                        </p>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-check-circle text-success"></i> 
+                            실시간 메트릭은 Prometheus에서 수집됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="status.js"></script>
+</body>
+</html>
