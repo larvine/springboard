@@ -1,19 +1,9 @@
-let faqData = null;
-
-// Load FAQ data from JSON
-async function loadFAQData() {
-    try {
-        const response = await fetch('faq-data.json');
-        faqData = await response.json();
-        initializeFAQ();
-    } catch (error) {
-        console.error('FAQ 데이터를 로드하는데 실패했습니다:', error);
-    }
-}
-
 // Initialize FAQ with loaded data
 function initializeFAQ() {
-    if (!faqData) return;
+    if (!faqData) {
+        console.error('FAQ 데이터가 로드되지 않았습니다.');
+        return;
+    }
     
     // Generate category tabs
     generateCategoryTabs();
@@ -129,5 +119,5 @@ function toggleAnswer(element) {
     icon.classList.toggle('active');
 }
 
-// Load FAQ data when page loads
-document.addEventListener('DOMContentLoaded', loadFAQData);
+// Initialize FAQ when page loads
+document.addEventListener('DOMContentLoaded', initializeFAQ);
