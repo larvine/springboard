@@ -179,12 +179,52 @@ body {
     border-radius: 0.375rem;
     overflow-x: auto;
     margin: 1rem 0;
+    position: relative;
 }
 
 .markdown-content pre code {
     background: transparent;
     padding: 0;
     color: #e2e8f0;
+    font-size: 0.875rem;
+}
+
+/* 코드 복사 버튼 */
+.code-block-wrapper {
+    position: relative;
+    margin: 1rem 0;
+}
+
+.copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    z-index: 10;
+}
+
+.copy-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.copy-button.copied {
+    background: rgba(72, 187, 120, 0.3);
+    border-color: rgba(72, 187, 120, 0.5);
+    color: #48bb78;
+}
+
+.copy-button i {
     font-size: 0.875rem;
 }
 

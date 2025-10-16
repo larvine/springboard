@@ -57,6 +57,9 @@ function generateGuideSections() {
             // Render markdown to HTML
             const htmlContent = marked.parse(category.content);
             sectionElement.innerHTML = `<div class="markdown-content">${htmlContent}</div>`;
+            
+            // Add copy buttons to code blocks
+            addCopyButtonsToCodeBlocks(sectionElement);
         } catch (error) {
             console.error(`마크다운 렌더링 실패:`, error);
             sectionElement.innerHTML = `
@@ -71,6 +74,87 @@ function generateGuideSections() {
         
         guideContent.appendChild(sectionElement);
     });
+}
+
+// Add copy buttons to all code blocks
+function addCopyButtonsToCodeBlocks(container) {
+    const codeBlocks = container.querySelectorAll('pre code');
+    
+    codeBlocks.forEach((codeBlock, index) => {
+        const pre = codeBlock.parentElement;
+        
+        // Wrap pre in a div if not already wrapped
+        if (!pre.parentElement.classList.contains('code-block-wrapper')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+        }
+        
+        // Create copy button
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-button';
+        copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사';
+        copyButton.setAttribute('data-code-index', index);
+        
+        // Add click event
+        copyButton.addEventListener('click', function() {
+            copyCodeToClipboard(codeBlock, copyButton);
+        });
+        
+        // Insert button into wrapper
+        pre.parentElement.insertBefore(copyButton, pre);
+    });
+}
+
+// Copy code to clipboard
+function copyCodeToClipboard(codeBlock, button) {
+    const code = codeBlock.textContent;
+    
+    // Use modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+            showCopySuccess(button);
+        }).catch(err => {
+            console.error('복사 실패:', err);
+            fallbackCopyToClipboard(code, button);
+        });
+    } else {
+        // Fallback for older browsers
+        fallbackCopyToClipboard(code, button);
+    }
+}
+
+// Fallback copy method for older browsers
+function fallbackCopyToClipboard(text, button) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopySuccess(button);
+    } catch (err) {
+        console.error('복사 실패:', err);
+        button.innerHTML = '<i class="fas fa-times"></i> 실패';
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Show copy success feedback
+function showCopySuccess(button) {
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> 복사됨!';
+    button.classList.add('copied');
+    
+    setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.classList.remove('copied');
+    }, 2000);
 }
 
 // Show specific guide section
