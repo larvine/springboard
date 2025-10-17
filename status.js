@@ -1,24 +1,39 @@
-// Model configuration
-const MODELS = [
-    {
-        id: 'gpt-oss-120b',
-        name: 'GPT-OSS-120B',
-        icon: '🤖',
-        description: 'Open Source GPT Model'
-    },
-    {
-        id: 'claude-4.5',
-        name: 'Claude 4.5',
-        icon: '🧠',
-        description: 'Anthropic Claude Model'
-    },
-    {
-        id: 'deepseek-v3-r1',
-        name: 'DeepSeek V3 R1',
-        icon: '🔍',
-        description: 'DeepSeek Reasoning Model'
+// Model configuration (동적으로 API에서 가져옴)
+let MODELS = [];  // API에서 동적으로 채워짐
+
+// 모델 아이콘 매핑 (선택적)
+const MODEL_ICONS = {
+    'gpt': '🤖',
+    'claude': '🧠',
+    'deepseek': '🔍',
+    'llama': '🦙',
+    'gemini': '💎',
+    'mistral': '🌪️',
+    'default': '🔮'
+};
+
+// 모델명에서 아이콘 추론
+function getModelIcon(modelName) {
+    const lowerName = modelName.toLowerCase();
+    
+    for (const [key, icon] of Object.entries(MODEL_ICONS)) {
+        if (lowerName.includes(key)) {
+            return icon;
+        }
     }
-];
+    
+    return MODEL_ICONS.default;
+}
+
+// 모델명을 표시용으로 포맷팅
+function formatModelName(modelName) {
+    // "gpt-4" -> "GPT-4"
+    // "gpt-oss-120b" -> "GPT-OSS-120B"
+    return modelName
+        .split('-')
+        .map(part => part.toUpperCase())
+        .join('-');
+}
 
 // Status thresholds (in milliseconds)
 const THRESHOLDS = {
@@ -40,12 +55,46 @@ let refreshTimer = null;
 /**
  * Initialize the status page
  */
-function initStatusPage() {
-    renderModelCards();
-    fetchAndUpdateStatus();
+async function initStatusPage() {
+    // 먼저 API에서 모델 목록을 가져와서 초기화
+    await fetchAndInitializeModels();
     
     // Auto-refresh every 30 seconds
     refreshTimer = setInterval(fetchAndUpdateStatus, REFRESH_INTERVAL);
+}
+
+/**
+ * API에서 모델 목록을 가져와서 초기화
+ */
+async function fetchAndInitializeModels() {
+    try {
+        const metrics = await fetchMetrics();
+        
+        if (metrics && Object.keys(metrics).length > 0) {
+            // API 데이터로 MODELS 배열 생성
+            MODELS = Object.entries(metrics).map(([modelId, data]) => ({
+                id: modelId,
+                name: formatModelName(data.model_name || modelId),
+                icon: getModelIcon(data.model_name || modelId),
+                description: `AI Model: ${data.model_name || modelId}`
+            }));
+        } else {
+            // 데이터가 없으면 빈 상태 표시
+            MODELS = [];
+        }
+        
+        // 모델 카드 렌더링
+        renderModelCards();
+        
+        // 상태 업데이트
+        updateModelStatus(metrics);
+        updateOverallStatus(metrics);
+        updateLastUpdateTime();
+        
+    } catch (error) {
+        console.error('Failed to initialize models:', error);
+        showError();
+    }
 }
 
 /**
@@ -53,6 +102,20 @@ function initStatusPage() {
  */
 function renderModelCards() {
     const container = document.getElementById('model-status-container');
+    
+    if (!MODELS || MODELS.length === 0) {
+        // 모델 데이터가 없는 경우
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i>
+                    <h5 class="mt-2">메트릭 데이터가 없습니다</h5>
+                    <p class="mb-0">메트릭 수집을 실행하세요: <code>python3 manage.py collect_metrics</code></p>
+                </div>
+            </div>
+        `;
+        return;
+    }
     
     const cardsHTML = MODELS.map(model => `
         <div class="col-md-6 col-lg-4">
@@ -154,17 +217,14 @@ async function fetchMetrics() {
         const metrics = {};
         
         data.data.forEach(item => {
-            // Django API에서 받은 모델명을 매칭
-            // 예: "gpt-oss-120b" 또는 "gpt-4" 등
-            const modelId = findModelId(item.model);
+            // API에서 받은 모델명을 그대로 ID로 사용 (동적)
+            const modelId = item.model;
             
-            if (modelId) {
-                metrics[modelId] = {
-                    p95: item.p95_latency_ms,  // 밀리초 단위
-                    timestamp: new Date(item.collected_at).getTime(),
-                    model_name: item.model
-                };
-            }
+            metrics[modelId] = {
+                p95: item.p95_latency_ms,  // 밀리초 단위
+                timestamp: new Date(item.collected_at).getTime(),
+                model_name: item.model
+            };
         });
         
         return metrics;
@@ -178,27 +238,6 @@ async function fetchMetrics() {
     }
 }
 
-/**
- * Find model ID from model name
- */
-function findModelId(modelName) {
-    // 정확히 일치하는 것부터 찾기
-    const exactMatch = MODELS.find(m => m.id === modelName);
-    if (exactMatch) return exactMatch.id;
-    
-    // 부분 일치 (소문자로 변환해서 비교)
-    const lowerModelName = modelName.toLowerCase();
-    const partialMatch = MODELS.find(m => 
-        m.id.toLowerCase().includes(lowerModelName) || 
-        lowerModelName.includes(m.id.toLowerCase()) ||
-        m.name.toLowerCase().includes(lowerModelName)
-    );
-    
-    if (partialMatch) return partialMatch.id;
-    
-    // 일치하는 것이 없으면 null
-    return null;
-}
 
 /**
  * Fetch mock metrics (for testing)
@@ -206,23 +245,34 @@ function findModelId(modelName) {
 function fetchMockMetrics() {
     return new Promise(resolve => {
         setTimeout(() => {
+            // Mock 데이터 - 실제와 비슷한 모델명
+            const mockModels = [
+                'gpt-4',
+                'gpt-3.5-turbo',
+                'claude-3-opus',
+                'llama-2-70b',
+                'mistral-large'
+            ];
+            
             const metrics = {};
             
-            MODELS.forEach(model => {
-                let p95;
+            mockModels.forEach((modelName, index) => {
                 const random = Math.random();
+                let p95;
                 
-                if (model.id === 'gpt-oss-120b') {
+                // 모델마다 다른 성능 특성
+                if (index === 0) {
                     p95 = random < 0.7 ? 50 + Math.random() * 80 : 150 + Math.random() * 200;
-                } else if (model.id === 'claude-4.5') {
+                } else if (index === 1) {
                     p95 = random < 0.9 ? 30 + Math.random() * 60 : 120 + Math.random() * 150;
                 } else {
                     p95 = random < 0.5 ? 60 + Math.random() * 100 : 250 + Math.random() * 150;
                 }
                 
-                metrics[model.id] = {
+                metrics[modelName] = {
                     p95: p95,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    model_name: modelName
                 };
             });
             
