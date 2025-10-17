@@ -20,12 +20,16 @@ const MODELS = [
     }
 ];
 
-// Status thresholds (in seconds)
+// Status thresholds (in milliseconds)
 const THRESHOLDS = {
-    healthy: 10,     // < 10 seconds
-    warning: 30      // 10-30 seconds
-    // > 30 seconds = critical
+    healthy: 100,     // < 100ms
+    warning: 200      // 100-200ms
+    // > 200ms = critical
 };
+
+// API Configuration
+const API_BASE_URL = 'http://localhost:8000';
+const USE_REAL_API = true;  // true: Django API 사용, false: Mock 데이터 사용
 
 // Refresh interval (30 seconds)
 const REFRESH_INTERVAL = 30000;
@@ -119,33 +123,101 @@ async function fetchAndUpdateStatus() {
 }
 
 /**
- * Fetch metrics from API (mock implementation)
+ * Fetch metrics from Django API
  */
 async function fetchMetrics() {
-    // Mock API call - replace with actual Prometheus query
-    // In production, this would call something like:
-    // const response = await fetch('/api/metrics/p95?duration=1h');
-    // return await response.json();
+    if (!USE_REAL_API) {
+        // Mock data for testing
+        return fetchMockMetrics();
+    }
     
+    try {
+        // Call Django API endpoint
+        const response = await fetch(`${API_BASE_URL}/api/metrics/p95/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.status !== 'success') {
+            throw new Error('API returned unsuccessful status');
+        }
+        
+        // Convert API response to metrics format
+        const metrics = {};
+        
+        data.data.forEach(item => {
+            // Django API에서 받은 모델명을 매칭
+            // 예: "gpt-oss-120b" 또는 "gpt-4" 등
+            const modelId = findModelId(item.model);
+            
+            if (modelId) {
+                metrics[modelId] = {
+                    p95: item.p95_latency_ms,  // 밀리초 단위
+                    timestamp: new Date(item.collected_at).getTime(),
+                    model_name: item.model
+                };
+            }
+        });
+        
+        return metrics;
+        
+    } catch (error) {
+        console.error('Failed to fetch from API:', error);
+        
+        // Fallback to mock data if API fails
+        console.warn('Falling back to mock data');
+        return fetchMockMetrics();
+    }
+}
+
+/**
+ * Find model ID from model name
+ */
+function findModelId(modelName) {
+    // 정확히 일치하는 것부터 찾기
+    const exactMatch = MODELS.find(m => m.id === modelName);
+    if (exactMatch) return exactMatch.id;
+    
+    // 부분 일치 (소문자로 변환해서 비교)
+    const lowerModelName = modelName.toLowerCase();
+    const partialMatch = MODELS.find(m => 
+        m.id.toLowerCase().includes(lowerModelName) || 
+        lowerModelName.includes(m.id.toLowerCase()) ||
+        m.name.toLowerCase().includes(lowerModelName)
+    );
+    
+    if (partialMatch) return partialMatch.id;
+    
+    // 일치하는 것이 없으면 null
+    return null;
+}
+
+/**
+ * Fetch mock metrics (for testing)
+ */
+function fetchMockMetrics() {
     return new Promise(resolve => {
         setTimeout(() => {
-            // Generate mock data with realistic values
             const metrics = {};
             
             MODELS.forEach(model => {
-                // Simulate different response times for different models
                 let p95;
                 const random = Math.random();
                 
                 if (model.id === 'gpt-oss-120b') {
-                    // Sometimes slow
-                    p95 = random < 0.7 ? 5 + Math.random() * 8 : 15 + Math.random() * 20;
+                    p95 = random < 0.7 ? 50 + Math.random() * 80 : 150 + Math.random() * 200;
                 } else if (model.id === 'claude-4.5') {
-                    // Usually fast
-                    p95 = random < 0.9 ? 3 + Math.random() * 6 : 12 + Math.random() * 15;
+                    p95 = random < 0.9 ? 30 + Math.random() * 60 : 120 + Math.random() * 150;
                 } else {
-                    // Variable performance
-                    p95 = random < 0.5 ? 6 + Math.random() * 10 : 25 + Math.random() * 15;
+                    p95 = random < 0.5 ? 60 + Math.random() * 100 : 250 + Math.random() * 150;
                 }
                 
                 metrics[model.id] = {
@@ -165,15 +237,19 @@ async function fetchMetrics() {
 function updateModelStatus(metrics) {
     MODELS.forEach(model => {
         const metric = metrics[model.id];
-        if (!metric) return;
+        if (!metric) {
+            // 데이터가 없는 경우
+            updateModelAsNoData(model.id);
+            return;
+        }
         
-        const p95Seconds = metric.p95;
-        const status = getStatusLevel(p95Seconds);
+        const p95Ms = metric.p95;  // 밀리초 단위
+        const status = getStatusLevel(p95Ms);
         
         // Update P95 value
         const p95Element = document.getElementById(`p95-${model.id}`);
         p95Element.innerHTML = `
-            ${p95Seconds.toFixed(2)} <span class="metric-unit">초</span>
+            ${p95Ms.toFixed(2)} <span class="metric-unit">ms</span>
         `;
         p95Element.className = `metric-value ${status}`;
         
@@ -191,6 +267,26 @@ function updateModelStatus(metrics) {
         `;
         statusTextElement.className = `status-text ${status}`;
     });
+}
+
+/**
+ * Update model display when no data is available
+ */
+function updateModelAsNoData(modelId) {
+    const p95Element = document.getElementById(`p95-${modelId}`);
+    p95Element.innerHTML = `<span class="text-muted">데이터 없음</span>`;
+    p95Element.className = 'metric-value';
+    
+    const statusElement = document.getElementById(`status-${modelId}`);
+    statusElement.innerHTML = `
+        <span class="status-indicator" style="background-color: #999;"></span>
+    `;
+    
+    const statusTextElement = document.getElementById(`status-text-${modelId}`);
+    statusTextElement.innerHTML = `
+        <i class="fas fa-info-circle"></i> 수집 대기 중
+    `;
+    statusTextElement.className = 'status-text text-muted';
 }
 
 /**
@@ -244,12 +340,12 @@ function updateLastUpdateTime() {
 }
 
 /**
- * Get status level based on P95 value
+ * Get status level based on P95 value (in milliseconds)
  */
-function getStatusLevel(p95Seconds) {
-    if (p95Seconds < THRESHOLDS.healthy) {
+function getStatusLevel(p95Ms) {
+    if (p95Ms < THRESHOLDS.healthy) {
         return 'healthy';
-    } else if (p95Seconds <= THRESHOLDS.warning) {
+    } else if (p95Ms <= THRESHOLDS.warning) {
         return 'warning';
     } else {
         return 'critical';
