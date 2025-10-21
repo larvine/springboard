@@ -1,0 +1,17 @@
+# Jekyll Newsletter Generator Configuration
+
+# 디렉토리 설정
+templates_dir: templates          # 템플릿 파일들이 저장된 디렉토리
+posts_dir: _posts                 # Jekyll 포스트 디렉토리
+images_dir: assets/images         # 이미지 파일 디렉토리
+
+# 후보 포스트 설정
+candidate_days: 30                # 최근 며칠 이내의 포스트를 후보로 할지
+
+# 기본 front matter 설정
+default_layout: post
+default_categories:
+  - newsletter
+default_tags:
+  - weekly
+  - newsletter

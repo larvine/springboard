@@ -1,0 +1,39 @@
+{
+  "title": "Weekly AI Newsletter - 2025년 10월 3주차",
+  "date": "2025-10-21",
+  "wide_items": [
+    {
+      "title": "GPT-5 출시 임박, 새로운 AI 시대의 서막",
+      "image": "/assets/images/newsletter/2025-10/gpt5-announcement.jpg",
+      "url": "https://example.com/posts/gpt5-announcement",
+      "description": "OpenAI가 GPT-5의 출시를 공식 발표했습니다. 이전 모델 대비 10배 향상된 성능과 새로운 멀티모달 기능을 선보일 예정입니다."
+    }
+  ],
+  "grid_items": [
+    {
+      "title": "구글, 새로운 양자 컴퓨터 칩 공개",
+      "image": "/assets/images/newsletter/2025-10/google-quantum.jpg",
+      "url": "https://example.com/posts/google-quantum-chip",
+      "description": "구글이 차세대 양자 컴퓨터 칩 'Willow'를 공개하며 양자 우위를 입증했습니다."
+    },
+    {
+      "title": "애플, Vision Pro 2 개발 중",
+      "image": "/assets/images/newsletter/2025-10/vision-pro-2.jpg",
+      "url": "https://example.com/posts/apple-vision-pro-2",
+      "description": "애플이 더 가볍고 저렴한 Vision Pro 2세대를 개발 중인 것으로 알려졌습니다."
+    },
+    {
+      "title": "테슬라 FSD v13 베타 출시",
+      "image": "/assets/images/newsletter/2025-10/tesla-fsd-v13.jpg",
+      "url": "https://example.com/posts/tesla-fsd-v13",
+      "description": "테슬라가 완전 자율주행(FSD) 소프트웨어 버전 13 베타를 선별된 사용자들에게 배포했습니다."
+    },
+    {
+      "title": "메타, 새로운 소셜 VR 플랫폼 발표",
+      "image": "/assets/images/newsletter/2025-10/meta-vr-platform.jpg",
+      "url": "https://example.com/posts/meta-vr-platform",
+      "description": "메타가 차세대 소셜 VR 플랫폼 'Horizon Worlds 2.0'을 발표했습니다."
+    }
+  ],
+  "filename": "2025-10-21-weekly-newsletter.md"
+}
