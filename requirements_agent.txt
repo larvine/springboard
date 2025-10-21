@@ -1,0 +1,17 @@
+# AI Newsletter Agent Requirements
+
+# 기본 필수 패키지
+pyyaml>=6.0
+
+# AI 제공자 (하나 이상 선택)
+openai>=1.0.0              # OpenAI API (GPT-4, GPT-3.5 등)
+anthropic>=0.18.0          # Anthropic API (Claude 등)
+
+# 스케줄러
+schedule>=1.2.0            # 작업 스케줄링
+
+# 알림 (선택사항)
+requests>=2.31.0           # Slack webhook 등에 사용
+
+# 유틸리티
+python-dateutil>=2.8.2     # 날짜 처리

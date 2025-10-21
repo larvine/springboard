@@ -1,0 +1,40 @@
+# AI Newsletter Agent Configuration
+
+# 디렉토리 설정
+templates_dir: templates
+posts_dir: _posts
+images_dir: assets/images
+
+# 후보 포스트 설정
+candidate_days: 30
+
+# AI 설정
+ai_provider: openai              # 'openai' 또는 'anthropic'
+ai_model: gpt-4o-mini           # OpenAI: gpt-4o, gpt-4o-mini, gpt-3.5-turbo / Anthropic: claude-3-5-sonnet-20241022
+ai_api_key: null                # null이면 환경변수에서 읽음 (OPENAI_API_KEY 또는 ANTHROPIC_API_KEY)
+
+# 에이전트 동작 설정
+auto_select: true               # AI가 자동으로 포스트 선택
+auto_summarize: true            # AI가 자동으로 요약 생성
+max_wide_items: 1               # Wide Section 최대 개수
+max_grid_items: 4               # Grid Section 최대 개수
+
+# 스케줄 설정 (cron 형식)
+schedule:
+  enabled: false                # 스케줄 실행 활성화
+  cron: "0 9 * * 1"            # 매주 월요일 오전 9시
+  timezone: "Asia/Seoul"
+
+# Jekyll Front Matter 기본값
+default_layout: post
+default_categories:
+  - newsletter
+default_tags:
+  - ai-generated
+  - weekly
+
+# 알림 설정 (선택사항)
+notifications:
+  enabled: false
+  slack_webhook: null
+  email: null
