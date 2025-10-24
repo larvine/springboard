@@ -218,6 +218,7 @@ function generateFAQContent() {
         category.faqs.forEach(faq => {
             const faqItem = document.createElement('div');
             faqItem.className = 'faq-item';
+            faqItem.setAttribute('data-category', category.id);
             faqItem.innerHTML = `
                 <div class="faq-question" onclick="toggleAnswer(this)">
                     <h5>${faq.question}</h5>
@@ -260,6 +261,17 @@ function showCategory(categoryName) {
 }
 
 function toggleAnswer(element) {
+    const faqItem = element.closest('.faq-item');
+    const searchInput = document.getElementById('faq-search');
+    const isSearching = searchInput && searchInput.value.trim().length > 0;
+    
+    // If searching, return to category view first
+    if (isSearching) {
+        const categoryId = faqItem.getAttribute('data-category');
+        returnToCategoryFromSearch(categoryId, faqItem);
+        return;
+    }
+    
     const answer = element.nextElementSibling;
     const icon = element.querySelector('.faq-icon');
     
@@ -283,6 +295,67 @@ function toggleAnswer(element) {
     // Toggle current answer
     answer.classList.toggle('active');
     icon.classList.toggle('active');
+}
+
+// Return to category view from search and open the clicked FAQ
+function returnToCategoryFromSearch(categoryId, clickedFaqItem) {
+    // Clear search
+    const searchInput = document.getElementById('faq-search');
+    searchInput.value = '';
+    
+    // Reset all FAQ items
+    showAllFAQs();
+    
+    // Hide all categories
+    const allCategories = document.querySelectorAll('.faq-category');
+    allCategories.forEach(cat => {
+        cat.classList.remove('active');
+    });
+    
+    // Remove active class from all category tabs
+    const allTabs = document.querySelectorAll('.category-tab');
+    allTabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show and activate the target category
+    const targetCategory = document.getElementById('category-' + categoryId);
+    if (targetCategory) {
+        targetCategory.classList.add('active');
+        
+        // Activate the corresponding tab
+        allTabs.forEach(tab => {
+            if (tab.querySelector('span').textContent === getCategoryName(categoryId)) {
+                tab.classList.add('active');
+            }
+        });
+        
+        // Find and open the clicked FAQ item in the category
+        setTimeout(() => {
+            const faqItems = targetCategory.querySelectorAll('.faq-item');
+            faqItems.forEach((item, index) => {
+                const question = item.querySelector('.faq-question h5');
+                const clickedQuestion = clickedFaqItem.querySelector('.faq-question h5');
+                const originalText = clickedQuestion.getAttribute('data-original-text') || clickedQuestion.textContent;
+                
+                if (question.textContent === originalText) {
+                    const answer = item.querySelector('.faq-answer');
+                    const icon = item.querySelector('.faq-icon');
+                    answer.classList.add('active');
+                    icon.classList.add('active');
+                    
+                    // Scroll to the item
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        }, 100);
+    }
+}
+
+// Get category name by ID
+function getCategoryName(categoryId) {
+    const category = faqData.categories.find(cat => cat.id === categoryId);
+    return category ? category.name : '';
 }
 
 // Initialize FAQ when page loads
