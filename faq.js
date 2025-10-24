@@ -359,4 +359,114 @@ function getCategoryName(categoryId) {
 }
 
 // Initialize FAQ when page loads
-document.addEventListener('DOMContentLoaded', initializeFAQ);
+/**
+ * Profile Dropdown Functionality
+ */
+function initProfileDropdown() {
+    const dropdownToggle = document.getElementById('profileDropdownToggle');
+    const dropdownMenu = document.getElementById('profileDropdownMenu');
+    const logoutButton = document.getElementById('logoutButton');
+    const profileSettings = document.getElementById('profileSettings');
+    const accountSettings = document.getElementById('accountSettings');
+    
+    if (!dropdownToggle || !dropdownMenu) {
+        return;
+    }
+    
+    // Create overlay for closing dropdown
+    const overlay = document.createElement('div');
+    overlay.className = 'dropdown-overlay';
+    overlay.id = 'dropdownOverlay';
+    document.body.appendChild(overlay);
+    
+    // Toggle dropdown
+    dropdownToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdownMenu.classList.contains('show');
+        
+        if (isOpen) {
+            closeDropdown();
+        } else {
+            openDropdown();
+        }
+    });
+    
+    // Close dropdown when clicking overlay
+    overlay.addEventListener('click', closeDropdown);
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+    
+    // Logout functionality
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+    }
+    
+    // Profile settings
+    if (profileSettings) {
+        profileSettings.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('프로필 설정 페이지로 이동합니다.');
+            closeDropdown();
+        });
+    }
+    
+    // Account settings
+    if (accountSettings) {
+        accountSettings.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('계정 설정 페이지로 이동합니다.');
+            closeDropdown();
+        });
+    }
+    
+    function openDropdown() {
+        dropdownMenu.classList.add('show');
+        dropdownToggle.classList.add('active');
+        overlay.classList.add('show');
+    }
+    
+    function closeDropdown() {
+        dropdownMenu.classList.remove('show');
+        dropdownToggle.classList.remove('active');
+        overlay.classList.remove('show');
+    }
+    
+    function handleLogout() {
+        // Confirm logout
+        if (confirm('로그아웃 하시겠습니까?')) {
+            // Show loading state
+            logoutButton.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>로그아웃 중...</span>
+            `;
+            
+            // Simulate logout process
+            setTimeout(() => {
+                alert('로그아웃 되었습니다.');
+                closeDropdown();
+                
+                // Reset logout button
+                logoutButton.innerHTML = `
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>로그아웃</span>
+                `;
+                
+                // Redirect to login page (uncomment in production)
+                // window.location.href = '/login';
+            }, 1000);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeFAQ();
+    initProfileDropdown();
+});
