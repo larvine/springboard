@@ -16,6 +16,172 @@ function initializeFAQ() {
     if (firstTab) {
         firstTab.click();
     }
+    
+    // Initialize search functionality
+    initializeSearch();
+}
+
+// Initialize search functionality
+function initializeSearch() {
+    const searchInput = document.getElementById('faq-search');
+    const searchClear = document.getElementById('search-clear');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+        
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            handleSearch();
+            searchInput.focus();
+        });
+    }
+}
+
+// Handle search input
+function handleSearch() {
+    const searchInput = document.getElementById('faq-search');
+    const searchClear = document.getElementById('search-clear');
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    // Show/hide clear button
+    if (searchTerm.length > 0) {
+        searchClear.style.display = 'block';
+    } else {
+        searchClear.style.display = 'none';
+    }
+    
+    // If search is empty, show all items in current category
+    if (searchTerm.length === 0) {
+        showAllFAQs();
+        return;
+    }
+    
+    // Search through all FAQs
+    let hasResults = false;
+    const allCategories = document.querySelectorAll('.faq-category');
+    
+    allCategories.forEach(category => {
+        const faqItems = category.querySelectorAll('.faq-item');
+        let categoryHasResults = false;
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question h5');
+            const answer = item.querySelector('.faq-answer-content');
+            const questionText = question.textContent.toLowerCase();
+            const answerText = answer.textContent.toLowerCase();
+            
+            // Check if search term is in question or answer
+            if (questionText.includes(searchTerm) || answerText.includes(searchTerm)) {
+                item.classList.remove('hidden');
+                categoryHasResults = true;
+                hasResults = true;
+                
+                // Highlight search term
+                highlightSearchTerm(question, searchTerm);
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        // Show category if it has matching results
+        if (categoryHasResults) {
+            category.classList.add('active');
+        } else {
+            category.classList.remove('active');
+        }
+    });
+    
+    // Hide category tabs during search
+    const categoryTabsContainer = document.querySelector('.category-tabs');
+    if (searchTerm.length > 0) {
+        categoryTabsContainer.style.display = 'none';
+    } else {
+        categoryTabsContainer.style.display = 'flex';
+    }
+    
+    // Show "no results" message if needed
+    showNoResultsMessage(!hasResults && searchTerm.length > 0);
+}
+
+// Highlight search term in text
+function highlightSearchTerm(element, searchTerm) {
+    const originalText = element.getAttribute('data-original-text') || element.textContent;
+    
+    if (!element.getAttribute('data-original-text')) {
+        element.setAttribute('data-original-text', originalText);
+    }
+    
+    if (searchTerm.length === 0) {
+        element.textContent = originalText;
+        return;
+    }
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const highlightedText = originalText.replace(regex, '<span class="search-highlight">$1</span>');
+    element.innerHTML = highlightedText;
+}
+
+// Show all FAQs (reset search)
+function showAllFAQs() {
+    const allFaqItems = document.querySelectorAll('.faq-item');
+    allFaqItems.forEach(item => {
+        item.classList.remove('hidden');
+        
+        // Remove highlights
+        const question = item.querySelector('.faq-question h5');
+        const originalText = question.getAttribute('data-original-text');
+        if (originalText) {
+            question.textContent = originalText;
+        }
+    });
+    
+    // Show category tabs
+    const categoryTabsContainer = document.querySelector('.category-tabs');
+    categoryTabsContainer.style.display = 'flex';
+    
+    // Show only active category
+    const allCategories = document.querySelectorAll('.faq-category');
+    allCategories.forEach(cat => {
+        if (!cat.classList.contains('active')) {
+            cat.classList.remove('active');
+        }
+    });
+    
+    // If no category is active, show first one
+    const activeCategory = document.querySelector('.faq-category.active');
+    if (!activeCategory) {
+        const firstTab = document.querySelector('.category-tab');
+        if (firstTab) {
+            firstTab.click();
+        }
+    }
+    
+    showNoResultsMessage(false);
+}
+
+// Show or hide "no results" message
+function showNoResultsMessage(show) {
+    let noResultsElement = document.querySelector('.no-results');
+    
+    if (show) {
+        if (!noResultsElement) {
+            noResultsElement = document.createElement('div');
+            noResultsElement.className = 'no-results';
+            noResultsElement.innerHTML = `
+                <i class="fas fa-search"></i>
+                <h4>검색 결과가 없습니다</h4>
+                <p>다른 검색어로 시도해보세요</p>
+            `;
+            
+            const container = document.querySelector('.container.mt--8');
+            container.appendChild(noResultsElement);
+        }
+        noResultsElement.style.display = 'block';
+    } else {
+        if (noResultsElement) {
+            noResultsElement.style.display = 'none';
+        }
+    }
 }
 
 // Generate category tabs
