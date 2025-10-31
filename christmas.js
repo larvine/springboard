@@ -216,14 +216,50 @@
         }
     }
 
+    // Add Santa and Rudolph flying animation
+    function addSantaSleigh() {
+        const header = document.querySelector('.header');
+        if (header) {
+            const santaSleigh = document.createElement('div');
+            santaSleigh.className = 'santa-sleigh';
+            santaSleigh.innerHTML = '🦌🎅';
+            santaSleigh.title = '산타와 루돌프가 선물을 배달하러 가는 중이에요!';
+            header.appendChild(santaSleigh);
+        }
+    }
+
+    // Add Christmas trees to header
+    function addChristmasTrees() {
+        const header = document.querySelector('.header');
+        if (header) {
+            const treesContainer = document.createElement('div');
+            treesContainer.className = 'christmas-trees-container';
+            
+            // Create multiple trees with different decorations
+            const treeEmojis = ['🎄', '🎄', '🎄', '🎄', '🎄', '🎄', '🎄', '🎄'];
+            
+            treeEmojis.forEach((emoji, index) => {
+                const tree = document.createElement('div');
+                tree.className = 'christmas-tree';
+                tree.innerHTML = emoji;
+                tree.title = `크리스마스 트리 #${index + 1}`;
+                treesContainer.appendChild(tree);
+            });
+            
+            header.appendChild(treesContainer);
+        }
+    }
+
     // Initialize everything when DOM is ready
     function init() {
         createSnowfall();
         createMusicControl();
         decorateNavbar();
         addChristmasLights();
+        addSantaSleigh();
+        addChristmasTrees();
         
-        console.log('🎄 메리 크리스마스! Christmas theme loaded successfully! 🎅');
+        console.log('🎄 메리 크리스마스! Christmas theme loaded successfully! 🎅🦌');
     }
 
     // Wait for DOM to be ready

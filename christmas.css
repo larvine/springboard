@@ -174,6 +174,79 @@
     }
 }
 
+/* Santa and Rudolph flying animation */
+.santa-sleigh {
+    position: absolute;
+    top: 20px;
+    left: -200px;
+    font-size: 48px;
+    z-index: 1000;
+    animation: santa-fly 20s linear infinite;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes santa-fly {
+    0% {
+        left: -200px;
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-20px) rotate(-2deg);
+    }
+    50% {
+        left: 50%;
+        transform: translateY(0) rotate(2deg);
+    }
+    75% {
+        transform: translateY(-20px) rotate(-2deg);
+    }
+    100% {
+        left: calc(100% + 200px);
+        transform: translateY(0) rotate(0deg);
+    }
+}
+
+/* Christmas trees decoration */
+.christmas-trees-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.christmas-tree {
+    font-size: 40px;
+    animation: tree-sway 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.christmas-tree:nth-child(1) { animation-delay: 0s; font-size: 45px; }
+.christmas-tree:nth-child(2) { animation-delay: 0.2s; font-size: 38px; }
+.christmas-tree:nth-child(3) { animation-delay: 0.4s; font-size: 42px; }
+.christmas-tree:nth-child(4) { animation-delay: 0.6s; font-size: 50px; }
+.christmas-tree:nth-child(5) { animation-delay: 0.8s; font-size: 35px; }
+.christmas-tree:nth-child(6) { animation-delay: 1s; font-size: 48px; }
+.christmas-tree:nth-child(7) { animation-delay: 1.2s; font-size: 40px; }
+.christmas-tree:nth-child(8) { animation-delay: 1.4s; font-size: 44px; }
+
+@keyframes tree-sway {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(2deg);
+    }
+    75% {
+        transform: rotate(-2deg);
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .christmas-music-control {
@@ -187,4 +260,26 @@
     .snowflake {
         font-size: 0.8em;
     }
+    
+    .santa-sleigh {
+        font-size: 32px;
+        top: 15px;
+    }
+    
+    .christmas-trees-container {
+        height: 60px;
+    }
+    
+    .christmas-tree {
+        font-size: 28px;
+    }
+    
+    .christmas-tree:nth-child(1) { font-size: 32px; }
+    .christmas-tree:nth-child(2) { font-size: 26px; }
+    .christmas-tree:nth-child(3) { font-size: 30px; }
+    .christmas-tree:nth-child(4) { font-size: 35px; }
+    .christmas-tree:nth-child(5) { font-size: 24px; }
+    .christmas-tree:nth-child(6) { font-size: 34px; }
+    .christmas-tree:nth-child(7) { font-size: 28px; }
+    .christmas-tree:nth-child(8) { font-size: 31px; }
 }
