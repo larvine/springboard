@@ -145,6 +145,40 @@
         font-size: 0.95rem;
       }
 
+      .action-buttons {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-button {
+        flex: 1;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        padding: 10px 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: #fff;
+        color: var(--accent);
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .action-button:hover {
+        background: rgba(60, 123, 250, 0.12);
+        box-shadow: inset 0 0 0 999px rgba(60, 123, 250, 0.05);
+      }
+
+      .action-button.is-revoke {
+        border-color: #ff6b6b;
+        color: #d93f3f;
+      }
+
+      .action-button.is-revoke:hover {
+        background: rgba(255, 107, 107, 0.15);
+        box-shadow: inset 0 0 0 999px rgba(217, 63, 63, 0.05);
+      }
+
       .details-card dl {
         margin: 0;
         display: grid;
@@ -232,6 +266,10 @@
               <article class="sub-card token-card">
                 <span class="token-label">Token</span>
                 <div class="token-value">${service.token}</div>
+                <div class="action-buttons" role="group" aria-label="Token actions">
+                  <button type="button" class="action-button">Copy</button>
+                  <button type="button" class="action-button is-revoke">Revoke</button>
+                </div>
               </article>
               <article class="sub-card details-card">
                 <dl>
