@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Service Token Cards</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f7fb;
+        --card-bg: #ffffff;
+        --border: #e1e4eb;
+        --text: #1f2430;
+        --muted: #69707d;
+        --accent: #3c7bfa;
+        --token-bg: #eef3ff;
+        --token-text: #163f9a;
+        font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 48px 16px 80px;
+        display: flex;
+        justify-content: center;
+        background: radial-gradient(circle at top, #f8fbff, #f1f3f8 55%, #e8ecf5);
+        color: var(--text);
+      }
+
+      .page {
+        width: min(960px, 100%);
+      }
+
+      h1 {
+        margin: 0 0 32px;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .item-card {
+        border-radius: 20px;
+        margin-bottom: 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        box-shadow: 0 15px 50px -30px rgba(30, 45, 90, 0.4);
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 55px -35px rgba(30, 45, 90, 0.45);
+      }
+
+      .item-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px 28px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+      }
+
+      .item-toggle:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -4px;
+      }
+
+      .item-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .item-meta {
+        display: flex;
+        gap: 18px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .chevron {
+        transition: transform 0.25s ease;
+        font-size: 1.25rem;
+      }
+
+      .item-card.open .chevron {
+        transform: rotate(180deg);
+      }
+
+      .item-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        border-top: 1px solid var(--border);
+        background: linear-gradient(180deg, #fdfdff, #f8f9ff);
+      }
+
+      .item-card.open .item-content {
+        max-height: 400px;
+      }
+
+      .sub-cards {
+        display: grid;
+        grid-template-columns: minmax(240px, 1fr) minmax(320px, 2fr);
+        gap: 20px;
+        padding: 24px 28px 30px;
+      }
+
+      .sub-card {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        background: #fff;
+      }
+
+      .token-card {
+        background: var(--token-bg);
+        color: var(--token-text);
+        border-color: rgba(60, 123, 250, 0.25);
+      }
+
+      .token-label {
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        color: rgba(22, 63, 154, 0.8);
+        letter-spacing: 0.04em;
+      }
+
+      .token-value {
+        font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+        word-break: break-all;
+        font-size: 0.95rem;
+      }
+
+      .details-card dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        row-gap: 10px;
+        column-gap: 12px;
+        font-size: 0.96rem;
+      }
+
+      .details-card dt {
+        color: var(--muted);
+      }
+
+      .details-card dd {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      @media (max-width: 720px) {
+        .sub-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .item-toggle {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .item-meta {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <h1>서비스 토큰 카드</h1>
+      <div id="itemContainer" aria-live="polite"></div>
+    </main>
+
+    <script>
+      const services = [
+        {
+          name: "결제 API",
+          token: "sk_live_51MRL6blXCe2QwDY8A3yxadp4",
+          created: "2023-10-01",
+          updated: "2024-08-22",
+          expires: "2025-03-31"
+        },
+        {
+          name: "알림 센터",
+          token: "sk_live_9HkUqmOP2ZZy44F7abc5610",
+          created: "2022-06-14",
+          updated: "2024-05-10",
+          expires: "2024-12-31"
+        },
+        {
+          name: "내부 통계",
+          token: "sk_live_7XZ11hqWE9PLmn2944vB0",
+          created: "2024-02-01",
+          updated: "2024-09-05",
+          expires: "2026-02-01"
+        }
+      ];
+
+      const container = document.getElementById("itemContainer");
+
+      services.forEach((service, index) => {
+        const card = document.createElement("section");
+        card.className = "item-card";
+
+        const toggleId = `details-${index}`;
+        card.innerHTML = `
+          <button class="item-toggle" aria-expanded="false" aria-controls="${toggleId}">
+            <div class="item-title">${service.name}</div>
+            <div class="item-meta">
+              <span>생성 ${service.created}</span>
+              <span>업데이트 ${service.updated}</span>
+              <span>만료 ${service.expires}</span>
+            </div>
+            <span class="chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="item-content" id="${toggleId}">
+            <div class="sub-cards">
+              <article class="sub-card token-card">
+                <span class="token-label">Token</span>
+                <div class="token-value">${service.token}</div>
+              </article>
+              <article class="sub-card details-card">
+                <dl>
+                  <dt>서비스 이름</dt><dd>${service.name}</dd>
+                  <dt>생성일</dt><dd>${service.created}</dd>
+                  <dt>업데이트일</dt><dd>${service.updated}</dd>
+                  <dt>만료일</dt><dd>${service.expires}</dd>
+                </dl>
+              </article>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      const toggleCards = () => {
+        document.querySelectorAll(".item-card").forEach((card) => {
+          const button = card.querySelector(".item-toggle");
+          const content = card.querySelector(".item-content");
+
+          button.addEventListener("click", () => {
+            const isOpen = card.classList.toggle("open");
+            button.setAttribute("aria-expanded", String(isOpen));
+            content.style.maxHeight = isOpen ? `${content.scrollHeight}px` : "0px";
+          });
+        });
+      };
+
+      toggleCards();
+    </script>
+  </body>
+</html>
