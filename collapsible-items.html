@@ -85,9 +85,27 @@
 
       .item-meta {
         display: flex;
-        gap: 18px;
         font-size: 0.92rem;
         color: var(--muted);
+      }
+
+      .meta-collapsed,
+      .meta-expanded {
+        display: inline-flex;
+        gap: 18px;
+      }
+
+      .meta-expanded {
+        display: none;
+        flex-wrap: wrap;
+      }
+
+      .item-card.open .meta-expanded {
+        display: inline-flex;
+      }
+
+      .item-card.open .meta-collapsed {
+        display: none;
       }
 
       .chevron {
@@ -255,9 +273,12 @@
           <button class="item-toggle" aria-expanded="false" aria-controls="${toggleId}">
             <div class="item-title">${service.name}</div>
             <div class="item-meta">
-              <span>생성 ${service.created}</span>
-              <span>업데이트 ${service.updated}</span>
-              <span>만료 ${service.expires}</span>
+              <span class="meta-collapsed">만료 ${service.expires}</span>
+              <div class="meta-expanded">
+                <span>생성 ${service.created}</span>
+                <span>업데이트 ${service.updated}</span>
+                <span>만료 ${service.expires}</span>
+              </div>
             </div>
             <span class="chevron" aria-hidden="true">⌄</span>
           </button>
