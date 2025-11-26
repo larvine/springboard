@@ -1,0 +1,237 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7fb;
+  --card-bg: #ffffff;
+  --border: #e1e4eb;
+  --text: #1f2430;
+  --muted: #69707d;
+  --accent: #3c7bfa;
+  --token-bg: #eef3ff;
+  --token-text: #163f9a;
+  font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 48px 16px 80px;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  color: var(--text);
+}
+
+.page {
+  width: min(960px, 100%);
+}
+
+h1 {
+  margin: 0 0 32px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.item-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 15px 50px -30px rgba(30, 45, 90, 0.4);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 55px -35px rgba(30, 45, 90, 0.45);
+}
+
+.item-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.item-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+}
+
+.item-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.item-meta {
+  display: flex;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.meta-collapsed,
+.meta-expanded {
+  display: inline-flex;
+  gap: 18px;
+}
+
+.meta-expanded {
+  display: none;
+  flex-wrap: wrap;
+}
+
+.item-card.open .meta-expanded {
+  display: inline-flex;
+}
+
+.item-card.open .meta-collapsed {
+  display: none;
+}
+
+.chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+  color: var(--muted);
+}
+
+.chevron svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.item-card.open .chevron {
+  transform: rotate(180deg);
+}
+
+.item-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, #fdfdff, #f8f9ff);
+}
+
+.item-card.open .item-content {
+  max-height: 400px;
+}
+
+.sub-cards {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(320px, 2fr);
+  gap: 20px;
+  padding: 24px 28px 30px;
+}
+
+.sub-card {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: #fff;
+}
+
+.token-card {
+  background: var(--token-bg);
+  color: var(--token-text);
+  border-color: rgba(60, 123, 250, 0.25);
+}
+
+.token-label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: rgba(22, 63, 154, 0.8);
+  letter-spacing: 0.04em;
+}
+
+.token-value {
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  word-break: break-all;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  padding: 10px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: #fff;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-button:hover {
+  background: rgba(60, 123, 250, 0.12);
+  box-shadow: inset 0 0 0 999px rgba(60, 123, 250, 0.05);
+}
+
+.action-button.is-revoke {
+  border-color: #ff6b6b;
+  color: #d93f3f;
+}
+
+.action-button.is-revoke:hover {
+  background: rgba(255, 107, 107, 0.15);
+  box-shadow: inset 0 0 0 999px rgba(217, 63, 63, 0.05);
+}
+
+.details-card dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  row-gap: 10px;
+  column-gap: 12px;
+  font-size: 0.96rem;
+}
+
+.details-card dt {
+  color: var(--muted);
+}
+
+.details-card dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .sub-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .item-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item-meta {
+    flex-wrap: wrap;
+  }
+}
